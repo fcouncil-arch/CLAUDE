@@ -1,0 +1,56 @@
+{
+  "overview": {
+    "work_schedule": "Monday–Friday, 10 AM–5 PM",
+    "new_call_cap": "Up to 3 calls per day (15 total slots per week)",
+    "what_counts_as_a_call": "1:1 client sessions (long-term, program, prospects) + TikTok lives (each live = 1 full slot)",
+    "tiktok_lives_target": "2–3 per week (we plan for 3 to keep pipeline strong)",
+    "close_rate": "30% from prospects to high-ticket program",
+    "pipeline_goal": "Close 1 new program client per week → requires minimum 3 prospect calls per week",
+    "all_categories": "Now fully integrated under the 15-slot weekly cap so nothing conflicts"
+  },
+  "category_1_long_term": {
+    "description": "Month-to-month retainer clients (one 60-min call per week, auto-renew)",
+    "current": 4,
+    "slots_used": 4,
+    "max_recommended": 4,
+    "notes": "Fixed every week — locked in"
+  },
+  "category_2_six_to_eight_week_program": {
+    "description": "High-ticket program clients (one 60-min call per week for 6–8 weeks)",
+    "current": 0,
+    "max_concurrent": 5,
+    "recommended_stagger": "Start 1 new client every 1–1.2 weeks (or exactly 5 new every 6 weeks for a 6-week program). Replace graduates immediately to stay at 5 concurrent.",
+    "slots_used_at_max": 5,
+    "notes": "This uses the exact remaining slots after long-term + prospects + TikTok lives"
+  },
+  "category_3_one_off_prospects": {
+    "description": "New prospect calls (one 60-min session only; may upgrade)",
+    "required_per_week": 3,
+    "slots_used": 3,
+    "notes": "Minimum to hit 30% close rate and get 1 new program signup per week"
+  },
+  "category_4_tiktok_lives": {
+    "description": "Live sessions to fill pipeline (60–90 min each)",
+    "target_per_week": 3,
+    "slots_used": 3,
+    "recommended_schedule": "Block 3 days that still leave room for your other 2 calls that day (e.g., Mon/Wed/Fri). Each live takes 1 full slot out of the 3-call daily max.",
+    "notes": "Now officially counts as a 'call' — never schedule if you already have 3 other calls booked that day"
+  },
+  "weekly_capacity_summary": {
+    "total_slots_available": 15,
+    "used_by_long_term": 4,
+    "used_by_prospects": 3,
+    "used_by_tiktok_lives": 3,
+    "used_by_program_at_max": 5,
+    "total_used_at_max": 15,
+    "example_balanced_week": "4 long-term + 3 prospects + 3 TikTok lives + 5 program = exactly 15 calls",
+    "never_exceed": "15 calls (or 3 per day) in any single week"
+  },
+  "holistic_tracking_recommendation": {
+    "how_to_use": "Every Sunday: count active clients in each category + planned TikTok lives. Total must = ≤15. If over, delay new prospects or program onboardings.",
+    "staggering_rule": "Program clients start staggered (1 every 1–1.2 weeks). Prospects fixed at 3/week. TikTok lives blocked first on lighter days.",
+    "safe_total_steady_state": "4 long-term + 5 program + 3 prospects + 3 TikTok lives = exactly 15 calls/week",
+    "growth_rate": "You will close ~1 new program client every week (30% of 3 prospects) while staying fully booked but not overloaded.",
+    "date_of_this_model": "March 30, 2026"
+  }
+}
