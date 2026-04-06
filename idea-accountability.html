@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Idea Accountability System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0f; }
+  button { font-family: 'Inter', -apple-system, sans-serif; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const COLORS = {
+  bg: "#0a0a0f",
+  card: "#13131a",
+  cardHover: "#1a1a24",
+  border: "#2a2a3a",
+  accent: "#7c5cfc",
+  accentGlow: "rgba(124, 92, 252, 0.15)",
+  accentSoft: "#6b4fe0",
+  green: "#34d399",
+  greenGlow: "rgba(52, 211, 153, 0.15)",
+  amber: "#fbbf24",
+  amberGlow: "rgba(251, 191, 36, 0.15)",
+  red: "#f87171",
+  redGlow: "rgba(248, 113, 113, 0.15)",
+  blue: "#60a5fa",
+  blueGlow: "rgba(96, 165, 250, 0.15)",
+  cyan: "#22d3ee",
+  cyanGlow: "rgba(34, 211, 238, 0.15)",
+  text: "#e4e4eb",
+  textDim: "#8888a0",
+  textMuted: "#55556a",
+};
+
+const problemItems = [
+  { icon: "\u{1F4A1}", label: "Ideas started", count: "\u221E", status: "lost" },
+  { icon: "\u{1F527}", label: "Projects half-built", count: "many", status: "abandoned" },
+  { icon: "\u{1F4AC}", label: "Conversations unfinished", count: "dozens", status: "forgotten" },
+  { icon: "\u{1F9E0}", label: "Brainstorms with no conclusion", count: "countless", status: "buried" },
+];
+
+const coreFeatures = [
+  {
+    id: "track",
+    icon: "\u{1F4E1}",
+    title: "Track Everything",
+    desc: "Captures all AI work \u2014 ideas, sessions, conversations, projects, tools built",
+    color: COLORS.accent,
+    glow: COLORS.accentGlow,
+  },
+  {
+    id: "organize",
+    icon: "\u{1F5C2}\uFE0F",
+    title: "Organize Without Overwhelm",
+    desc: "Clean, prioritized views \u2014 not a wall of 200 items causing paralysis",
+    color: COLORS.blue,
+    glow: COLORS.blueGlow,
+  },
+  {
+    id: "accountable",
+    icon: "\u{1F514}",
+    title: "Keep You Accountable",
+    desc: "The \"Are you still watching?\" moment \u2014 prompts decisions on every item",
+    color: COLORS.amber,
+    glow: COLORS.amberGlow,
+  },
+  {
+    id: "connect",
+    icon: "\u{1F517}",
+    title: "Smart Connections",
+    desc: "Detects related conversations and suggests combining them into projects",
+    color: COLORS.cyan,
+    glow: COLORS.cyanGlow,
+  },
+  {
+    id: "zero",
+    icon: "\u{1F3AF}",
+    title: "\"Zero\" Inbox System",
+    desc: "Idea Zero, Project Zero, Conversation Zero \u2014 nothing in limbo",
+    color: COLORS.green,
+    glow: COLORS.greenGlow,
+  },
+  {
+    id: "created",
+    icon: "\u{1F4E6}",
+    title: "Created Folder + Reminders",
+    desc: "Tracks what you've built, reminds you it exists, teaches you to use it",
+    color: COLORS.accent,
+    glow: COLORS.accentGlow,
+  },
+];
+
+const accountabilityActions = [
+  { label: "Continue", icon: "\u25B6\uFE0F", color: COLORS.green, desc: "Keep working on this now" },
+  { label: "Remind Later", icon: "\u23F0", color: COLORS.amber, desc: "Snooze \u2014 1w / 1m / 6m" },
+  { label: "Back Burner", icon: "\u{1F525}", color: COLORS.blue, desc: "I care, but not right now" },
+  { label: "Combine", icon: "\u{1F517}", color: COLORS.cyan, desc: "Merge with related items" },
+  { label: "Delete", icon: "\u{1F5D1}\uFE0F", color: COLORS.red, desc: "Let it go" },
+  { label: "Complete", icon: "\u2705", color: COLORS.green, desc: "Done \u2014 move to Created" },
+];
+
+const zeroMetrics = [
+  { label: "Idea Zero", icon: "\u{1F4A1}", current: 12, target: 0, color: COLORS.amber },
+  { label: "Project Zero", icon: "\u{1F527}", current: 7, target: 0, color: COLORS.red },
+  { label: "Conversation Zero", icon: "\u{1F4AC}", current: 23, target: 0, color: COLORS.accent },
+  { label: "Brainstorm Zero", icon: "\u{1F9E0}", current: 5, target: 0, color: COLORS.blue },
+];
+
+const mockPrompt = {
+  title: "VA Negative Engine",
+  type: "Project",
+  lastTouched: "3 weeks ago",
+  relatedItems: ["Hyperbolic Logic", "Via Tractor"],
+};
+
+function ProgressRing({ current, max, color, size = 56 }) {
+  const stroke = 4;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const progress = Math.min(current / max, 1);
+  const offset = circumference * (1 - progress);
+
+  return (
+    <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+      <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={COLORS.border} strokeWidth={stroke} />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        fill="none"
+        stroke={color}
+        strokeWidth={stroke}
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+        style={{ transition: "stroke-dashoffset 0.8s ease" }}
+      />
+    </svg>
+  );
+}
+
+function Section({ children, style }) {
+  return <div style={{ marginBottom: 48, ...style }}>{children}</div>;
+}
+
+function SectionTitle({ children, sub }) {
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <h2 style={{ fontSize: 22, fontWeight: 700, color: COLORS.text, margin: 0, letterSpacing: "-0.02em" }}>
+        {children}
+      </h2>
+      {sub && <p style={{ fontSize: 14, color: COLORS.textDim, margin: "6px 0 0", lineHeight: 1.5 }}>{sub}</p>}
+    </div>
+  );
+}
+
+function NetflixPromptDemo({ isActive }) {
+  const [selectedAction, setSelectedAction] = useState(null);
+
+  return (
+    <div
+      style={{
+        background: `linear-gradient(135deg, ${COLORS.card}, #1a1525)`,
+        border: `1px solid ${isActive ? COLORS.accent : COLORS.border}`,
+        borderRadius: 16,
+        padding: 32,
+        position: "relative",
+        overflow: "hidden",
+        transition: "border-color 0.3s ease",
+      }}
+    >
+      {isActive && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: `linear-gradient(90deg, ${COLORS.accent}, ${COLORS.cyan})`,
+          }}
+        />
+      )}
+
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+        <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: COLORS.accent, fontWeight: 600 }}>
+          Accountability Check
+        </span>
+      </div>
+
+      <h3 style={{ fontSize: 20, fontWeight: 700, color: COLORS.text, margin: "0 0 4px" }}>
+        {mockPrompt.title}
+      </h3>
+      <div style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 13, color: COLORS.textDim }}>
+          {mockPrompt.type} · Last touched {mockPrompt.lastTouched}
+        </span>
+      </div>
+
+      <div
+        style={{
+          background: COLORS.accentGlow,
+          border: `1px solid ${COLORS.border}`,
+          borderRadius: 10,
+          padding: "12px 16px",
+          marginBottom: 20,
+          fontSize: 13,
+          color: COLORS.textDim,
+          lineHeight: 1.5,
+        }}
+      >
+        \u{1F517} Related items found: <span style={{ color: COLORS.cyan }}>{mockPrompt.relatedItems.join(", ")}</span>
+        <br />
+        <span style={{ color: COLORS.textMuted }}>Would you like to combine these into a single project?</span>
+      </div>
+
+      <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, marginBottom: 12 }}>
+        Are you still working on this?
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+        {accountabilityActions.map((a) => (
+          <button
+            key={a.label}
+            onClick={() => setSelectedAction(a.label === selectedAction ? null : a.label)}
+            style={{
+              background: selectedAction === a.label ? a.color + "22" : "rgba(255,255,255,0.03)",
+              border: `1px solid ${selectedAction === a.label ? a.color : COLORS.border}`,
+              borderRadius: 10,
+              padding: "10px 8px",
+              cursor: "pointer",
+              textAlign: "center",
+              transition: "all 0.2s ease",
+            }}
+          >
+            <div style={{ fontSize: 18, marginBottom: 4 }}>{a.icon}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: selectedAction === a.label ? a.color : COLORS.text }}>
+              {a.label}
+            </div>
+            <div style={{ fontSize: 10, color: COLORS.textMuted, marginTop: 2 }}>{a.desc}</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function IdeaAccountabilitySystem() {
+  const [activeFeature, setActiveFeature] = useState(null);
+  const [showDemo, setShowDemo] = useState(false);
+
+  return (
+    <div style={{ background: COLORS.bg, minHeight: "100vh", color: COLORS.text, fontFamily: "'Inter', -apple-system, sans-serif" }}>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 24px 80px" }}>
+
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: 56 }}>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background: COLORS.accentGlow,
+              border: `1px solid ${COLORS.accent}44`,
+              borderRadius: 100,
+              padding: "6px 16px",
+              marginBottom: 20,
+              fontSize: 12,
+              fontWeight: 600,
+              color: COLORS.accent,
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+            }}
+          >
+            Brain Dump \u2192 Project Brief
+          </div>
+          <h1
+            style={{
+              fontSize: 40,
+              fontWeight: 800,
+              margin: "0 0 12px",
+              letterSpacing: "-0.03em",
+              lineHeight: 1.1,
+              background: `linear-gradient(135deg, ${COLORS.text}, ${COLORS.accent})`,
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Idea Accountability
+            <br />
+            System
+          </h1>
+          <p style={{ fontSize: 17, color: COLORS.textDim, maxWidth: 500, margin: "0 auto", lineHeight: 1.6 }}>
+            "Netflix Are You Still Watching?" \u2014 but for every idea, project, and brainstorm you start with AI.
+          </p>
+        </div>
+
+        {/* The Problem */}
+        <Section>
+          <SectionTitle sub="Working with AI makes it easy to start things. There's no system to finish them.">
+            The Problem
+          </SectionTitle>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+            {problemItems.map((item) => (
+              <div
+                key={item.label}
+                style={{
+                  background: COLORS.redGlow,
+                  border: `1px solid ${COLORS.red}33`,
+                  borderRadius: 12,
+                  padding: "16px 18px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                }}
+              >
+                <span style={{ fontSize: 24 }}>{item.icon}</span>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text }}>{item.label}</div>
+                  <div style={{ fontSize: 12, color: COLORS.red, opacity: 0.8 }}>{item.status}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        {/* Core Features */}
+        <Section>
+          <SectionTitle sub="Six capabilities that turn endless generation into deliberate creation.">
+            What It Does
+          </SectionTitle>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+            {coreFeatures.map((f) => (
+              <div
+                key={f.id}
+                onClick={() => setActiveFeature(activeFeature === f.id ? null : f.id)}
+                style={{
+                  background: activeFeature === f.id ? f.glow : COLORS.card,
+                  border: `1px solid ${activeFeature === f.id ? f.color + "66" : COLORS.border}`,
+                  borderRadius: 14,
+                  padding: 20,
+                  cursor: "pointer",
+                  transition: "all 0.25s ease",
+                }}
+              >
+                <div style={{ fontSize: 26, marginBottom: 10 }}>{f.icon}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: COLORS.text, marginBottom: 6 }}>{f.title}</div>
+                <div style={{ fontSize: 13, color: COLORS.textDim, lineHeight: 1.5 }}>{f.desc}</div>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        {/* The Accountability Prompt */}
+        <Section>
+          <SectionTitle sub="Every item gets surfaced. Every item gets a decision. Nothing stays in limbo.">
+            The Core Interaction
+          </SectionTitle>
+          <NetflixPromptDemo isActive={showDemo} />
+          <button
+            onClick={() => setShowDemo(!showDemo)}
+            style={{
+              display: "block",
+              margin: "12px auto 0",
+              background: "none",
+              border: "none",
+              color: COLORS.accent,
+              fontSize: 13,
+              cursor: "pointer",
+              padding: "8px 16px",
+            }}
+          >
+            {showDemo ? "\u25B2 Collapse" : "\u25BC Try clicking the actions above"}
+          </button>
+        </Section>
+
+        {/* Zero Dashboard */}
+        <Section>
+          <SectionTitle sub="Like Inbox Zero for email \u2014 but for your entire creative output.">
+            The "Zero" Dashboard
+          </SectionTitle>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+            {zeroMetrics.map((m) => (
+              <div
+                key={m.label}
+                style={{
+                  background: COLORS.card,
+                  border: `1px solid ${COLORS.border}`,
+                  borderRadius: 14,
+                  padding: "20px 12px",
+                  textAlign: "center",
+                }}
+              >
+                <div style={{ position: "relative", display: "inline-block", marginBottom: 10 }}>
+                  <ProgressRing current={m.current} max={30} color={m.color} size={60} />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      fontSize: 16,
+                      fontWeight: 800,
+                      color: m.color,
+                    }}
+                  >
+                    {m.current}
+                  </div>
+                </div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: COLORS.text }}>{m.label}</div>
+                <div style={{ fontSize: 11, color: COLORS.textMuted, marginTop: 2 }}>Target: {m.target}</div>
+              </div>
+            ))}
+          </div>
+          <div
+            style={{
+              textAlign: "center",
+              marginTop: 16,
+              fontSize: 13,
+              color: COLORS.textMuted,
+              fontStyle: "italic",
+            }}
+          >
+            47 items need decisions \u2192 0 items in limbo
+          </div>
+        </Section>
+
+        {/* The Flow */}
+        <Section>
+          <SectionTitle sub="From chaos to clarity \u2014 the lifecycle of every idea.">The Flow</SectionTitle>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2, position: "relative" }}>
+            {[
+              { step: "1", label: "Capture", desc: "Idea, project, or conversation enters the system", color: COLORS.accent },
+              { step: "2", label: "Categorize", desc: "Auto-tagged: idea / project / brainstorm / conversation", color: COLORS.blue },
+              { step: "3", label: "Surface", desc: "Accountability check \u2014 \"Are you still working on this?\"", color: COLORS.amber },
+              { step: "4", label: "Decide", desc: "Continue / Snooze / Combine / Delete / Complete", color: COLORS.cyan },
+              { step: "5", label: "Resolve", desc: "Item reaches a final state \u2014 completed or intentionally closed", color: COLORS.green },
+            ].map((s) => (
+              <div key={s.step} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0" }}>
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: "50%",
+                    background: s.color + "22",
+                    border: `2px solid ${s.color}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 14,
+                    fontWeight: 800,
+                    color: s.color,
+                    flexShrink: 0,
+                  }}
+                >
+                  {s.step}
+                </div>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: COLORS.text }}>{s.label}</div>
+                  <div style={{ fontSize: 13, color: COLORS.textDim }}>{s.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        {/* Why It Matters */}
+        <div
+          style={{
+            background: `linear-gradient(135deg, ${COLORS.accentGlow}, ${COLORS.cyanGlow})`,
+            border: `1px solid ${COLORS.accent}44`,
+            borderRadius: 16,
+            padding: "32px 28px",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontSize: 28, marginBottom: 12 }}>\u{1F3AF}</div>
+          <h3 style={{ fontSize: 18, fontWeight: 700, color: COLORS.text, margin: "0 0 8px" }}>Why This Matters</h3>
+          <p style={{ fontSize: 14, color: COLORS.textDim, lineHeight: 1.7, maxWidth: 500, margin: "0 auto" }}>
+            Without this, working with AI is a treadmill \u2014 lots of motion, no progress. This tool turns AI collaboration
+            from <strong style={{ color: COLORS.red }}>"endless generation"</strong> into{" "}
+            <strong style={{ color: COLORS.green }}>"deliberate creation with follow-through."</strong>
+          </p>
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: 32, fontSize: 12, color: COLORS.textMuted }}>
+          Brain dump captured April 6, 2026 \u00B7 Fitzgerald
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<IdeaAccountabilitySystem />);
+</script>
+</body>
+</html>
