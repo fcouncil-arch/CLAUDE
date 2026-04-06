@@ -5,503 +5,444 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Idea Accountability System</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0a0a0f; }
+  body {
+    background: #0a0a0f;
+    color: #e4e4eb;
+    font-family: 'Inter', -apple-system, sans-serif;
+    min-height: 100vh;
+  }
   button { font-family: 'Inter', -apple-system, sans-serif; }
+
+  .container { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 56px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(124, 92, 252, 0.15);
+    border: 1px solid rgba(124, 92, 252, 0.27);
+    border-radius: 100px; padding: 6px 16px; margin-bottom: 20px;
+    font-size: 12px; font-weight: 600; color: #7c5cfc;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .title {
+    font-size: 40px; font-weight: 800; margin: 0 0 12px;
+    letter-spacing: -0.03em; line-height: 1.1;
+    background: linear-gradient(135deg, #e4e4eb, #7c5cfc);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    font-size: 17px; color: #8888a0; max-width: 500px;
+    margin: 0 auto; line-height: 1.6;
+  }
+
+  /* Sections */
+  .section { margin-bottom: 48px; }
+  .section-title { font-size: 22px; font-weight: 700; color: #e4e4eb; margin: 0; letter-spacing: -0.02em; }
+  .section-sub { font-size: 14px; color: #8888a0; margin: 6px 0 0; line-height: 1.5; }
+  .section-header { margin-bottom: 20px; }
+
+  /* Problem Grid */
+  .problem-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .problem-item {
+    background: rgba(248, 113, 113, 0.15);
+    border: 1px solid rgba(248, 113, 113, 0.2);
+    border-radius: 12px; padding: 16px 18px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .problem-icon { font-size: 24px; }
+  .problem-label { font-size: 14px; font-weight: 600; color: #e4e4eb; }
+  .problem-status { font-size: 12px; color: #f87171; opacity: 0.8; }
+
+  /* Features Grid */
+  .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .feature-card {
+    background: #13131a;
+    border: 1px solid #2a2a3a;
+    border-radius: 14px; padding: 20px;
+    cursor: pointer; transition: all 0.25s ease;
+  }
+  .feature-card:hover { background: #1a1a24; }
+  .feature-card.active-accent { background: rgba(124, 92, 252, 0.15); border-color: rgba(124, 92, 252, 0.4); }
+  .feature-card.active-blue { background: rgba(96, 165, 250, 0.15); border-color: rgba(96, 165, 250, 0.4); }
+  .feature-card.active-amber { background: rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.4); }
+  .feature-card.active-cyan { background: rgba(34, 211, 238, 0.15); border-color: rgba(34, 211, 238, 0.4); }
+  .feature-card.active-green { background: rgba(52, 211, 153, 0.15); border-color: rgba(52, 211, 153, 0.4); }
+  .feature-icon { font-size: 26px; margin-bottom: 10px; }
+  .feature-title { font-size: 15px; font-weight: 700; color: #e4e4eb; margin-bottom: 6px; }
+  .feature-desc { font-size: 13px; color: #8888a0; line-height: 1.5; }
+
+  /* Accountability Prompt */
+  .prompt-box {
+    background: linear-gradient(135deg, #13131a, #1a1525);
+    border: 1px solid #2a2a3a;
+    border-radius: 16px; padding: 32px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.3s ease;
+  }
+  .prompt-box.active { border-color: #7c5cfc; }
+  .prompt-topbar {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #7c5cfc, #22d3ee);
+    display: none;
+  }
+  .prompt-box.active .prompt-topbar { display: block; }
+  .prompt-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: #7c5cfc; font-weight: 600; margin-bottom: 6px;
+  }
+  .prompt-title { font-size: 20px; font-weight: 700; color: #e4e4eb; margin: 0 0 4px; }
+  .prompt-meta { font-size: 13px; color: #8888a0; margin-bottom: 20px; }
+  .prompt-related {
+    background: rgba(124, 92, 252, 0.15);
+    border: 1px solid #2a2a3a;
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+    font-size: 13px; color: #8888a0; line-height: 1.5;
+  }
+  .prompt-related .cyan { color: #22d3ee; }
+  .prompt-related .muted { color: #55556a; }
+  .prompt-question { font-size: 14px; font-weight: 600; color: #e4e4eb; margin-bottom: 12px; }
+
+  /* Action Buttons */
+  .actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .action-btn {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #2a2a3a;
+    border-radius: 10px; padding: 10px 8px;
+    cursor: pointer; text-align: center;
+    transition: all 0.2s ease;
+  }
+  .action-btn:hover { background: rgba(255,255,255,0.06); }
+  .action-icon { font-size: 18px; margin-bottom: 4px; }
+  .action-label { font-size: 12px; font-weight: 600; color: #e4e4eb; }
+  .action-desc { font-size: 10px; color: #55556a; margin-top: 2px; }
+
+  .action-btn.selected-green { background: rgba(52, 211, 153, 0.13); border-color: #34d399; }
+  .action-btn.selected-green .action-label { color: #34d399; }
+  .action-btn.selected-amber { background: rgba(251, 191, 36, 0.13); border-color: #fbbf24; }
+  .action-btn.selected-amber .action-label { color: #fbbf24; }
+  .action-btn.selected-blue { background: rgba(96, 165, 250, 0.13); border-color: #60a5fa; }
+  .action-btn.selected-blue .action-label { color: #60a5fa; }
+  .action-btn.selected-cyan { background: rgba(34, 211, 238, 0.13); border-color: #22d3ee; }
+  .action-btn.selected-cyan .action-label { color: #22d3ee; }
+  .action-btn.selected-red { background: rgba(248, 113, 113, 0.13); border-color: #f87171; }
+  .action-btn.selected-red .action-label { color: #f87171; }
+
+  .toggle-btn {
+    display: block; margin: 12px auto 0; background: none; border: none;
+    color: #7c5cfc; font-size: 13px; cursor: pointer; padding: 8px 16px;
+  }
+
+  /* Zero Dashboard */
+  .zero-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .zero-card {
+    background: #13131a; border: 1px solid #2a2a3a;
+    border-radius: 14px; padding: 20px 12px; text-align: center;
+  }
+  .zero-ring { position: relative; display: inline-block; margin-bottom: 10px; }
+  .zero-value {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px; font-weight: 800;
+  }
+  .zero-label { font-size: 12px; font-weight: 600; color: #e4e4eb; }
+  .zero-target { font-size: 11px; color: #55556a; margin-top: 2px; }
+  .zero-summary {
+    text-align: center; margin-top: 16px;
+    font-size: 13px; color: #55556a; font-style: italic;
+  }
+
+  /* Flow */
+  .flow-step { display: flex; align-items: center; gap: 16px; padding: 14px 0; }
+  .flow-number {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800; flex-shrink: 0;
+    border-width: 2px; border-style: solid;
+  }
+  .flow-label { font-size: 15px; font-weight: 700; color: #e4e4eb; }
+  .flow-desc { font-size: 13px; color: #8888a0; }
+
+  /* Why It Matters */
+  .why-box {
+    background: linear-gradient(135deg, rgba(124, 92, 252, 0.15), rgba(34, 211, 238, 0.15));
+    border: 1px solid rgba(124, 92, 252, 0.27);
+    border-radius: 16px; padding: 32px 28px; text-align: center;
+  }
+  .why-icon { font-size: 28px; margin-bottom: 12px; }
+  .why-title { font-size: 18px; font-weight: 700; color: #e4e4eb; margin: 0 0 8px; }
+  .why-text {
+    font-size: 14px; color: #8888a0; line-height: 1.7;
+    max-width: 500px; margin: 0 auto;
+  }
+  .why-text .red { color: #f87171; font-weight: 700; }
+  .why-text .green { color: #34d399; font-weight: 700; }
+  .footer { text-align: center; margin-top: 32px; font-size: 12px; color: #55556a; }
+
+  @media (max-width: 600px) {
+    .problem-grid, .features-grid { grid-template-columns: 1fr; }
+    .zero-grid { grid-template-columns: repeat(2, 1fr); }
+    .actions-grid { grid-template-columns: repeat(2, 1fr); }
+    .title { font-size: 30px; }
+  }
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState } = React;
+<div class="container">
 
-const COLORS = {
-  bg: "#0a0a0f",
-  card: "#13131a",
-  cardHover: "#1a1a24",
-  border: "#2a2a3a",
-  accent: "#7c5cfc",
-  accentGlow: "rgba(124, 92, 252, 0.15)",
-  accentSoft: "#6b4fe0",
-  green: "#34d399",
-  greenGlow: "rgba(52, 211, 153, 0.15)",
-  amber: "#fbbf24",
-  amberGlow: "rgba(251, 191, 36, 0.15)",
-  red: "#f87171",
-  redGlow: "rgba(248, 113, 113, 0.15)",
-  blue: "#60a5fa",
-  blueGlow: "rgba(96, 165, 250, 0.15)",
-  cyan: "#22d3ee",
-  cyanGlow: "rgba(34, 211, 238, 0.15)",
-  text: "#e4e4eb",
-  textDim: "#8888a0",
-  textMuted: "#55556a",
-};
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">Brain Dump &#8594; Project Brief</div>
+    <h1 class="title">Idea Accountability<br>System</h1>
+    <p class="subtitle">"Netflix Are You Still Watching?" &#8212; but for every idea, project, and brainstorm you start with AI.</p>
+  </div>
 
-const problemItems = [
-  { icon: "\u{1F4A1}", label: "Ideas started", count: "\u221E", status: "lost" },
-  { icon: "\u{1F527}", label: "Projects half-built", count: "many", status: "abandoned" },
-  { icon: "\u{1F4AC}", label: "Conversations unfinished", count: "dozens", status: "forgotten" },
-  { icon: "\u{1F9E0}", label: "Brainstorms with no conclusion", count: "countless", status: "buried" },
-];
-
-const coreFeatures = [
-  {
-    id: "track",
-    icon: "\u{1F4E1}",
-    title: "Track Everything",
-    desc: "Captures all AI work \u2014 ideas, sessions, conversations, projects, tools built",
-    color: COLORS.accent,
-    glow: COLORS.accentGlow,
-  },
-  {
-    id: "organize",
-    icon: "\u{1F5C2}\uFE0F",
-    title: "Organize Without Overwhelm",
-    desc: "Clean, prioritized views \u2014 not a wall of 200 items causing paralysis",
-    color: COLORS.blue,
-    glow: COLORS.blueGlow,
-  },
-  {
-    id: "accountable",
-    icon: "\u{1F514}",
-    title: "Keep You Accountable",
-    desc: "The \"Are you still watching?\" moment \u2014 prompts decisions on every item",
-    color: COLORS.amber,
-    glow: COLORS.amberGlow,
-  },
-  {
-    id: "connect",
-    icon: "\u{1F517}",
-    title: "Smart Connections",
-    desc: "Detects related conversations and suggests combining them into projects",
-    color: COLORS.cyan,
-    glow: COLORS.cyanGlow,
-  },
-  {
-    id: "zero",
-    icon: "\u{1F3AF}",
-    title: "\"Zero\" Inbox System",
-    desc: "Idea Zero, Project Zero, Conversation Zero \u2014 nothing in limbo",
-    color: COLORS.green,
-    glow: COLORS.greenGlow,
-  },
-  {
-    id: "created",
-    icon: "\u{1F4E6}",
-    title: "Created Folder + Reminders",
-    desc: "Tracks what you've built, reminds you it exists, teaches you to use it",
-    color: COLORS.accent,
-    glow: COLORS.accentGlow,
-  },
-];
-
-const accountabilityActions = [
-  { label: "Continue", icon: "\u25B6\uFE0F", color: COLORS.green, desc: "Keep working on this now" },
-  { label: "Remind Later", icon: "\u23F0", color: COLORS.amber, desc: "Snooze \u2014 1w / 1m / 6m" },
-  { label: "Back Burner", icon: "\u{1F525}", color: COLORS.blue, desc: "I care, but not right now" },
-  { label: "Combine", icon: "\u{1F517}", color: COLORS.cyan, desc: "Merge with related items" },
-  { label: "Delete", icon: "\u{1F5D1}\uFE0F", color: COLORS.red, desc: "Let it go" },
-  { label: "Complete", icon: "\u2705", color: COLORS.green, desc: "Done \u2014 move to Created" },
-];
-
-const zeroMetrics = [
-  { label: "Idea Zero", icon: "\u{1F4A1}", current: 12, target: 0, color: COLORS.amber },
-  { label: "Project Zero", icon: "\u{1F527}", current: 7, target: 0, color: COLORS.red },
-  { label: "Conversation Zero", icon: "\u{1F4AC}", current: 23, target: 0, color: COLORS.accent },
-  { label: "Brainstorm Zero", icon: "\u{1F9E0}", current: 5, target: 0, color: COLORS.blue },
-];
-
-const mockPrompt = {
-  title: "VA Negative Engine",
-  type: "Project",
-  lastTouched: "3 weeks ago",
-  relatedItems: ["Hyperbolic Logic", "Via Tractor"],
-};
-
-function ProgressRing({ current, max, color, size = 56 }) {
-  const stroke = 4;
-  const radius = (size - stroke) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const progress = Math.min(current / max, 1);
-  const offset = circumference * (1 - progress);
-
-  return (
-    <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-      <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={COLORS.border} strokeWidth={stroke} />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        fill="none"
-        stroke={color}
-        strokeWidth={stroke}
-        strokeDasharray={circumference}
-        strokeDashoffset={offset}
-        strokeLinecap="round"
-        style={{ transition: "stroke-dashoffset 0.8s ease" }}
-      />
-    </svg>
-  );
-}
-
-function Section({ children, style }) {
-  return <div style={{ marginBottom: 48, ...style }}>{children}</div>;
-}
-
-function SectionTitle({ children, sub }) {
-  return (
-    <div style={{ marginBottom: 20 }}>
-      <h2 style={{ fontSize: 22, fontWeight: 700, color: COLORS.text, margin: 0, letterSpacing: "-0.02em" }}>
-        {children}
-      </h2>
-      {sub && <p style={{ fontSize: 14, color: COLORS.textDim, margin: "6px 0 0", lineHeight: 1.5 }}>{sub}</p>}
+  <!-- The Problem -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">The Problem</h2>
+      <p class="section-sub">Working with AI makes it easy to start things. There's no system to finish them.</p>
     </div>
-  );
-}
-
-function NetflixPromptDemo({ isActive }) {
-  const [selectedAction, setSelectedAction] = useState(null);
-
-  return (
-    <div
-      style={{
-        background: `linear-gradient(135deg, ${COLORS.card}, #1a1525)`,
-        border: `1px solid ${isActive ? COLORS.accent : COLORS.border}`,
-        borderRadius: 16,
-        padding: 32,
-        position: "relative",
-        overflow: "hidden",
-        transition: "border-color 0.3s ease",
-      }}
-    >
-      {isActive && (
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 3,
-            background: `linear-gradient(90deg, ${COLORS.accent}, ${COLORS.cyan})`,
-          }}
-        />
-      )}
-
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-        <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: COLORS.accent, fontWeight: 600 }}>
-          Accountability Check
-        </span>
+    <div class="problem-grid">
+      <div class="problem-item">
+        <span class="problem-icon">&#x1F4A1;</span>
+        <div><div class="problem-label">Ideas started</div><div class="problem-status">lost</div></div>
       </div>
-
-      <h3 style={{ fontSize: 20, fontWeight: 700, color: COLORS.text, margin: "0 0 4px" }}>
-        {mockPrompt.title}
-      </h3>
-      <div style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 13, color: COLORS.textDim }}>
-          {mockPrompt.type} · Last touched {mockPrompt.lastTouched}
-        </span>
+      <div class="problem-item">
+        <span class="problem-icon">&#x1F527;</span>
+        <div><div class="problem-label">Projects half-built</div><div class="problem-status">abandoned</div></div>
       </div>
-
-      <div
-        style={{
-          background: COLORS.accentGlow,
-          border: `1px solid ${COLORS.border}`,
-          borderRadius: 10,
-          padding: "12px 16px",
-          marginBottom: 20,
-          fontSize: 13,
-          color: COLORS.textDim,
-          lineHeight: 1.5,
-        }}
-      >
-        \u{1F517} Related items found: <span style={{ color: COLORS.cyan }}>{mockPrompt.relatedItems.join(", ")}</span>
-        <br />
-        <span style={{ color: COLORS.textMuted }}>Would you like to combine these into a single project?</span>
+      <div class="problem-item">
+        <span class="problem-icon">&#x1F4AC;</span>
+        <div><div class="problem-label">Conversations unfinished</div><div class="problem-status">forgotten</div></div>
       </div>
-
-      <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, marginBottom: 12 }}>
-        Are you still working on this?
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
-        {accountabilityActions.map((a) => (
-          <button
-            key={a.label}
-            onClick={() => setSelectedAction(a.label === selectedAction ? null : a.label)}
-            style={{
-              background: selectedAction === a.label ? a.color + "22" : "rgba(255,255,255,0.03)",
-              border: `1px solid ${selectedAction === a.label ? a.color : COLORS.border}`,
-              borderRadius: 10,
-              padding: "10px 8px",
-              cursor: "pointer",
-              textAlign: "center",
-              transition: "all 0.2s ease",
-            }}
-          >
-            <div style={{ fontSize: 18, marginBottom: 4 }}>{a.icon}</div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: selectedAction === a.label ? a.color : COLORS.text }}>
-              {a.label}
-            </div>
-            <div style={{ fontSize: 10, color: COLORS.textMuted, marginTop: 2 }}>{a.desc}</div>
-          </button>
-        ))}
+      <div class="problem-item">
+        <span class="problem-icon">&#x1F9E0;</span>
+        <div><div class="problem-label">Brainstorms with no conclusion</div><div class="problem-status">buried</div></div>
       </div>
     </div>
-  );
-}
+  </div>
 
-function IdeaAccountabilitySystem() {
-  const [activeFeature, setActiveFeature] = useState(null);
-  const [showDemo, setShowDemo] = useState(false);
-
-  return (
-    <div style={{ background: COLORS.bg, minHeight: "100vh", color: COLORS.text, fontFamily: "'Inter', -apple-system, sans-serif" }}>
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 24px 80px" }}>
-
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: 56 }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              background: COLORS.accentGlow,
-              border: `1px solid ${COLORS.accent}44`,
-              borderRadius: 100,
-              padding: "6px 16px",
-              marginBottom: 20,
-              fontSize: 12,
-              fontWeight: 600,
-              color: COLORS.accent,
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
-            }}
-          >
-            Brain Dump \u2192 Project Brief
-          </div>
-          <h1
-            style={{
-              fontSize: 40,
-              fontWeight: 800,
-              margin: "0 0 12px",
-              letterSpacing: "-0.03em",
-              lineHeight: 1.1,
-              background: `linear-gradient(135deg, ${COLORS.text}, ${COLORS.accent})`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Idea Accountability
-            <br />
-            System
-          </h1>
-          <p style={{ fontSize: 17, color: COLORS.textDim, maxWidth: 500, margin: "0 auto", lineHeight: 1.6 }}>
-            "Netflix Are You Still Watching?" \u2014 but for every idea, project, and brainstorm you start with AI.
-          </p>
-        </div>
-
-        {/* The Problem */}
-        <Section>
-          <SectionTitle sub="Working with AI makes it easy to start things. There's no system to finish them.">
-            The Problem
-          </SectionTitle>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
-            {problemItems.map((item) => (
-              <div
-                key={item.label}
-                style={{
-                  background: COLORS.redGlow,
-                  border: `1px solid ${COLORS.red}33`,
-                  borderRadius: 12,
-                  padding: "16px 18px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 14,
-                }}
-              >
-                <span style={{ fontSize: 24 }}>{item.icon}</span>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text }}>{item.label}</div>
-                  <div style={{ fontSize: 12, color: COLORS.red, opacity: 0.8 }}>{item.status}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Section>
-
-        {/* Core Features */}
-        <Section>
-          <SectionTitle sub="Six capabilities that turn endless generation into deliberate creation.">
-            What It Does
-          </SectionTitle>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-            {coreFeatures.map((f) => (
-              <div
-                key={f.id}
-                onClick={() => setActiveFeature(activeFeature === f.id ? null : f.id)}
-                style={{
-                  background: activeFeature === f.id ? f.glow : COLORS.card,
-                  border: `1px solid ${activeFeature === f.id ? f.color + "66" : COLORS.border}`,
-                  borderRadius: 14,
-                  padding: 20,
-                  cursor: "pointer",
-                  transition: "all 0.25s ease",
-                }}
-              >
-                <div style={{ fontSize: 26, marginBottom: 10 }}>{f.icon}</div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: COLORS.text, marginBottom: 6 }}>{f.title}</div>
-                <div style={{ fontSize: 13, color: COLORS.textDim, lineHeight: 1.5 }}>{f.desc}</div>
-              </div>
-            ))}
-          </div>
-        </Section>
-
-        {/* The Accountability Prompt */}
-        <Section>
-          <SectionTitle sub="Every item gets surfaced. Every item gets a decision. Nothing stays in limbo.">
-            The Core Interaction
-          </SectionTitle>
-          <NetflixPromptDemo isActive={showDemo} />
-          <button
-            onClick={() => setShowDemo(!showDemo)}
-            style={{
-              display: "block",
-              margin: "12px auto 0",
-              background: "none",
-              border: "none",
-              color: COLORS.accent,
-              fontSize: 13,
-              cursor: "pointer",
-              padding: "8px 16px",
-            }}
-          >
-            {showDemo ? "\u25B2 Collapse" : "\u25BC Try clicking the actions above"}
-          </button>
-        </Section>
-
-        {/* Zero Dashboard */}
-        <Section>
-          <SectionTitle sub="Like Inbox Zero for email \u2014 but for your entire creative output.">
-            The "Zero" Dashboard
-          </SectionTitle>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-            {zeroMetrics.map((m) => (
-              <div
-                key={m.label}
-                style={{
-                  background: COLORS.card,
-                  border: `1px solid ${COLORS.border}`,
-                  borderRadius: 14,
-                  padding: "20px 12px",
-                  textAlign: "center",
-                }}
-              >
-                <div style={{ position: "relative", display: "inline-block", marginBottom: 10 }}>
-                  <ProgressRing current={m.current} max={30} color={m.color} size={60} />
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      fontSize: 16,
-                      fontWeight: 800,
-                      color: m.color,
-                    }}
-                  >
-                    {m.current}
-                  </div>
-                </div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: COLORS.text }}>{m.label}</div>
-                <div style={{ fontSize: 11, color: COLORS.textMuted, marginTop: 2 }}>Target: {m.target}</div>
-              </div>
-            ))}
-          </div>
-          <div
-            style={{
-              textAlign: "center",
-              marginTop: 16,
-              fontSize: 13,
-              color: COLORS.textMuted,
-              fontStyle: "italic",
-            }}
-          >
-            47 items need decisions \u2192 0 items in limbo
-          </div>
-        </Section>
-
-        {/* The Flow */}
-        <Section>
-          <SectionTitle sub="From chaos to clarity \u2014 the lifecycle of every idea.">The Flow</SectionTitle>
-          <div style={{ display: "flex", flexDirection: "column", gap: 2, position: "relative" }}>
-            {[
-              { step: "1", label: "Capture", desc: "Idea, project, or conversation enters the system", color: COLORS.accent },
-              { step: "2", label: "Categorize", desc: "Auto-tagged: idea / project / brainstorm / conversation", color: COLORS.blue },
-              { step: "3", label: "Surface", desc: "Accountability check \u2014 \"Are you still working on this?\"", color: COLORS.amber },
-              { step: "4", label: "Decide", desc: "Continue / Snooze / Combine / Delete / Complete", color: COLORS.cyan },
-              { step: "5", label: "Resolve", desc: "Item reaches a final state \u2014 completed or intentionally closed", color: COLORS.green },
-            ].map((s) => (
-              <div key={s.step} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0" }}>
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: "50%",
-                    background: s.color + "22",
-                    border: `2px solid ${s.color}`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 14,
-                    fontWeight: 800,
-                    color: s.color,
-                    flexShrink: 0,
-                  }}
-                >
-                  {s.step}
-                </div>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: COLORS.text }}>{s.label}</div>
-                  <div style={{ fontSize: 13, color: COLORS.textDim }}>{s.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Section>
-
-        {/* Why It Matters */}
-        <div
-          style={{
-            background: `linear-gradient(135deg, ${COLORS.accentGlow}, ${COLORS.cyanGlow})`,
-            border: `1px solid ${COLORS.accent}44`,
-            borderRadius: 16,
-            padding: "32px 28px",
-            textAlign: "center",
-          }}
-        >
-          <div style={{ fontSize: 28, marginBottom: 12 }}>\u{1F3AF}</div>
-          <h3 style={{ fontSize: 18, fontWeight: 700, color: COLORS.text, margin: "0 0 8px" }}>Why This Matters</h3>
-          <p style={{ fontSize: 14, color: COLORS.textDim, lineHeight: 1.7, maxWidth: 500, margin: "0 auto" }}>
-            Without this, working with AI is a treadmill \u2014 lots of motion, no progress. This tool turns AI collaboration
-            from <strong style={{ color: COLORS.red }}>"endless generation"</strong> into{" "}
-            <strong style={{ color: COLORS.green }}>"deliberate creation with follow-through."</strong>
-          </p>
-        </div>
-
-        <div style={{ textAlign: "center", marginTop: 32, fontSize: 12, color: COLORS.textMuted }}>
-          Brain dump captured April 6, 2026 \u00B7 Fitzgerald
-        </div>
+  <!-- Core Features -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">What It Does</h2>
+      <p class="section-sub">Six capabilities that turn endless generation into deliberate creation.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card" data-color="accent" onclick="toggleFeature(this)">
+        <div class="feature-icon">&#x1F4E1;</div>
+        <div class="feature-title">Track Everything</div>
+        <div class="feature-desc">Captures all AI work &#8212; ideas, sessions, conversations, projects, tools built</div>
+      </div>
+      <div class="feature-card" data-color="blue" onclick="toggleFeature(this)">
+        <div class="feature-icon">&#x1F5C2;&#xFE0F;</div>
+        <div class="feature-title">Organize Without Overwhelm</div>
+        <div class="feature-desc">Clean, prioritized views &#8212; not a wall of 200 items causing paralysis</div>
+      </div>
+      <div class="feature-card" data-color="amber" onclick="toggleFeature(this)">
+        <div class="feature-icon">&#x1F514;</div>
+        <div class="feature-title">Keep You Accountable</div>
+        <div class="feature-desc">The "Are you still watching?" moment &#8212; prompts decisions on every item</div>
+      </div>
+      <div class="feature-card" data-color="cyan" onclick="toggleFeature(this)">
+        <div class="feature-icon">&#x1F517;</div>
+        <div class="feature-title">Smart Connections</div>
+        <div class="feature-desc">Detects related conversations and suggests combining them into projects</div>
+      </div>
+      <div class="feature-card" data-color="green" onclick="toggleFeature(this)">
+        <div class="feature-icon">&#x1F3AF;</div>
+        <div class="feature-title">"Zero" Inbox System</div>
+        <div class="feature-desc">Idea Zero, Project Zero, Conversation Zero &#8212; nothing in limbo</div>
+      </div>
+      <div class="feature-card" data-color="accent" onclick="toggleFeature(this)">
+        <div class="feature-icon">&#x1F4E6;</div>
+        <div class="feature-title">Created Folder + Reminders</div>
+        <div class="feature-desc">Tracks what you've built, reminds you it exists, teaches you to use it</div>
       </div>
     </div>
-  );
-}
+  </div>
 
-ReactDOM.createRoot(document.getElementById("root")).render(<IdeaAccountabilitySystem />);
+  <!-- The Core Interaction -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">The Core Interaction</h2>
+      <p class="section-sub">Every item gets surfaced. Every item gets a decision. Nothing stays in limbo.</p>
+    </div>
+    <div class="prompt-box" id="promptBox">
+      <div class="prompt-topbar"></div>
+      <div class="prompt-label">Accountability Check</div>
+      <h3 class="prompt-title">VA Negative Engine</h3>
+      <div class="prompt-meta">Project &middot; Last touched 3 weeks ago</div>
+      <div class="prompt-related">
+        &#x1F517; Related items found: <span class="cyan">Hyperbolic Logic, Via Tractor</span><br>
+        <span class="muted">Would you like to combine these into a single project?</span>
+      </div>
+      <div class="prompt-question">Are you still working on this?</div>
+      <div class="actions-grid" id="actionsGrid">
+        <button class="action-btn" data-color="green" onclick="selectAction(this)">
+          <div class="action-icon">&#x25B6;&#xFE0F;</div>
+          <div class="action-label">Continue</div>
+          <div class="action-desc">Keep working on this now</div>
+        </button>
+        <button class="action-btn" data-color="amber" onclick="selectAction(this)">
+          <div class="action-icon">&#x23F0;</div>
+          <div class="action-label">Remind Later</div>
+          <div class="action-desc">Snooze &#8212; 1w / 1m / 6m</div>
+        </button>
+        <button class="action-btn" data-color="blue" onclick="selectAction(this)">
+          <div class="action-icon">&#x1F525;</div>
+          <div class="action-label">Back Burner</div>
+          <div class="action-desc">I care, but not right now</div>
+        </button>
+        <button class="action-btn" data-color="cyan" onclick="selectAction(this)">
+          <div class="action-icon">&#x1F517;</div>
+          <div class="action-label">Combine</div>
+          <div class="action-desc">Merge with related items</div>
+        </button>
+        <button class="action-btn" data-color="red" onclick="selectAction(this)">
+          <div class="action-icon">&#x1F5D1;&#xFE0F;</div>
+          <div class="action-label">Delete</div>
+          <div class="action-desc">Let it go</div>
+        </button>
+        <button class="action-btn" data-color="green" onclick="selectAction(this)">
+          <div class="action-icon">&#x2705;</div>
+          <div class="action-label">Complete</div>
+          <div class="action-desc">Done &#8212; move to Created</div>
+        </button>
+      </div>
+    </div>
+    <button class="toggle-btn" id="toggleBtn" onclick="toggleDemo()">&#x25BC; Try clicking the actions above</button>
+  </div>
+
+  <!-- Zero Dashboard -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">The "Zero" Dashboard</h2>
+      <p class="section-sub">Like Inbox Zero for email &#8212; but for your entire creative output.</p>
+    </div>
+    <div class="zero-grid" id="zeroGrid"></div>
+    <div class="zero-summary">47 items need decisions &#8594; 0 items in limbo</div>
+  </div>
+
+  <!-- The Flow -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">The Flow</h2>
+      <p class="section-sub">From chaos to clarity &#8212; the lifecycle of every idea.</p>
+    </div>
+    <div id="flowSteps"></div>
+  </div>
+
+  <!-- Why It Matters -->
+  <div class="why-box">
+    <div class="why-icon">&#x1F3AF;</div>
+    <h3 class="why-title">Why This Matters</h3>
+    <p class="why-text">
+      Without this, working with AI is a treadmill &#8212; lots of motion, no progress. This tool turns AI collaboration
+      from <span class="red">"endless generation"</span> into
+      <span class="green">"deliberate creation with follow-through."</span>
+    </p>
+  </div>
+
+  <div class="footer">Brain dump captured April 6, 2026 &middot; Fitzgerald</div>
+</div>
+
+<script>
+  // Feature card toggle
+  function toggleFeature(el) {
+    var color = el.getAttribute('data-color');
+    var cls = 'active-' + color;
+    if (el.classList.contains(cls)) {
+      el.classList.remove(cls);
+    } else {
+      document.querySelectorAll('.feature-card').forEach(function(c) {
+        c.className = 'feature-card';
+      });
+      el.classList.add(cls);
+    }
+  }
+
+  // Action button select
+  var selectedBtn = null;
+  function selectAction(el) {
+    var color = el.getAttribute('data-color');
+    if (selectedBtn === el) {
+      el.className = 'action-btn';
+      selectedBtn = null;
+    } else {
+      document.querySelectorAll('.action-btn').forEach(function(b) {
+        b.className = 'action-btn';
+      });
+      el.classList.add('selected-' + color);
+      selectedBtn = el;
+    }
+  }
+
+  // Toggle demo
+  var demoActive = false;
+  function toggleDemo() {
+    demoActive = !demoActive;
+    var box = document.getElementById('promptBox');
+    var btn = document.getElementById('toggleBtn');
+    if (demoActive) {
+      box.classList.add('active');
+      btn.innerHTML = '&#x25B2; Collapse';
+    } else {
+      box.classList.remove('active');
+      btn.innerHTML = '&#x25BC; Try clicking the actions above';
+    }
+  }
+
+  // Build SVG progress rings
+  function createRing(current, max, color, size) {
+    var stroke = 4;
+    var radius = (size - stroke) / 2;
+    var circumference = 2 * Math.PI * radius;
+    var progress = Math.min(current / max, 1);
+    var offset = circumference * (1 - progress);
+    var half = size / 2;
+    return '<svg width="' + size + '" height="' + size + '" style="transform:rotate(-90deg)">' +
+      '<circle cx="' + half + '" cy="' + half + '" r="' + radius + '" fill="none" stroke="#2a2a3a" stroke-width="' + stroke + '"/>' +
+      '<circle cx="' + half + '" cy="' + half + '" r="' + radius + '" fill="none" stroke="' + color + '" stroke-width="' + stroke + '"' +
+      ' stroke-dasharray="' + circumference + '" stroke-dashoffset="' + offset + '" stroke-linecap="round" style="transition:stroke-dashoffset 0.8s ease"/>' +
+      '</svg>';
+  }
+
+  // Zero Dashboard
+  var zeroMetrics = [
+    { label: 'Idea Zero', icon: '&#x1F4A1;', current: 12, color: '#fbbf24' },
+    { label: 'Project Zero', icon: '&#x1F527;', current: 7, color: '#f87171' },
+    { label: 'Conversation Zero', icon: '&#x1F4AC;', current: 23, color: '#7c5cfc' },
+    { label: 'Brainstorm Zero', icon: '&#x1F9E0;', current: 5, color: '#60a5fa' }
+  ];
+  var zeroHTML = '';
+  zeroMetrics.forEach(function(m) {
+    zeroHTML += '<div class="zero-card">' +
+      '<div class="zero-ring">' + createRing(m.current, 30, m.color, 60) +
+      '<div class="zero-value" style="color:' + m.color + '">' + m.current + '</div></div>' +
+      '<div class="zero-label">' + m.label + '</div>' +
+      '<div class="zero-target">Target: 0</div></div>';
+  });
+  document.getElementById('zeroGrid').innerHTML = zeroHTML;
+
+  // Flow Steps
+  var flowSteps = [
+    { step: '1', label: 'Capture', desc: 'Idea, project, or conversation enters the system', color: '#7c5cfc' },
+    { step: '2', label: 'Categorize', desc: 'Auto-tagged: idea / project / brainstorm / conversation', color: '#60a5fa' },
+    { step: '3', label: 'Surface', desc: 'Accountability check \u2014 "Are you still working on this?"', color: '#fbbf24' },
+    { step: '4', label: 'Decide', desc: 'Continue / Snooze / Combine / Delete / Complete', color: '#22d3ee' },
+    { step: '5', label: 'Resolve', desc: 'Item reaches a final state \u2014 completed or intentionally closed', color: '#34d399' }
+  ];
+  var flowHTML = '';
+  flowSteps.forEach(function(s) {
+    flowHTML += '<div class="flow-step">' +
+      '<div class="flow-number" style="background:' + s.color + '22;border-color:' + s.color + ';color:' + s.color + '">' + s.step + '</div>' +
+      '<div><div class="flow-label">' + s.label + '</div><div class="flow-desc">' + s.desc + '</div></div></div>';
+  });
+  document.getElementById('flowSteps').innerHTML = flowHTML;
 </script>
 </body>
 </html>
